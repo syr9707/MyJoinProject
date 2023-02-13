@@ -103,4 +103,47 @@ class MemberRepositoryTest {
         // when, then
         assertThrows(Exception.class, () -> memberRepository.save(member2));
     }
+
+    // 회원 수정
+    @Test
+    public void 성공_회원수정() throws Exception {
+        // given
+        Member member1 = Member.builder()
+                .username("username")
+                .password("1234567890")
+                .name("MyName1")
+                .nickname("MyNickname")
+                .role(Role.USER)
+                .age(22)
+                .build();
+
+        memberRepository.save(member1);
+        clear();
+
+        String updatePassword = "updatePassword";
+        String updateName = "updateName";
+        String updateNickname = "updateNickname";
+        int updateAge = 30;
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        // when
+        Member findMember = memberRepository.findById(member1.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없습니다. userId = " + member1.getId()));
+        findMember.updateAge(updateAge);
+        findMember.updateName(updateName);
+        findMember.updateNickName(updateNickname);
+        findMember.updatePassword(passwordEncoder, updatePassword);
+        em.flush();
+
+        // then
+        Member updateMember = memberRepository.findById(findMember.getId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 회원 없습니다. userId = " + findMember.getId()));
+
+        assertThat(updateMember).isSameAs(findMember);
+        assertThat(passwordEncoder.matches(updatePassword, updateMember.getPassword())).isTrue();
+        assertThat(updateMember.getName()).isEqualTo(updateName);
+        assertThat(updateMember.getName()).isNotEqualTo(member1.getName());
+    }
+
 }
