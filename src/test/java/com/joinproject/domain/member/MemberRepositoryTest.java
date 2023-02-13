@@ -71,4 +71,36 @@ class MemberRepositoryTest {
         // when, then
         assertThrows(Exception.class, () -> memberRepository.save(member));
     }
+
+    // 회원가입시 중복된 아이디가 있으면 오류
+    /**
+     * username가 unique로 설정되었기 때문에, username에는 인덱스가 형성되고, 중복을 허용하지 않는 제약조건이 추가됨.
+     * */
+    @Test
+    public void 오류_회원가입시_중복된_아이디가_있음() throws Exception {
+        // given
+        Member member1 = Member.builder()
+                .username("username")
+                .password("1234567890")
+                .name("MyName1")
+                .nickname("MyNickname")
+                .role(Role.USER)
+                .age(22)
+                .build();
+
+        Member member2 = Member.builder()
+                .username("username")
+                .password("987654321")
+                .name("MyName2")
+                .nickname("MyNickname")
+                .role(Role.USER)
+                .age(22)
+                .build();
+
+        memberRepository.save(member1);
+        clear();
+
+        // when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member2));
+    }
 }
