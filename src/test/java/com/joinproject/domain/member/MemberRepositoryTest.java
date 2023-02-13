@@ -15,7 +15,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 class MemberRepositoryTest {
-  
 
     @Autowired
     MemberRepository memberRepository;
@@ -55,5 +54,21 @@ class MemberRepositoryTest {
 
         assertThat(findMember).isSameAs(saveMember);
         assertThat(findMember).isSameAs(member);
+    }
+
+    // 아이디 없이 회원가입시 오류
+    @Test
+    public void 오류_회원가입시_아이디가_없음() throws Exception {
+        // given
+        Member member = Member.builder()
+                .password("1234567890")
+                .name("MyName")
+                .nickname("MyNickname")
+                .role(Role.USER)
+                .age(22)
+                .build();
+
+        // when, then
+        assertThrows(Exception.class, () -> memberRepository.save(member));
     }
 }
