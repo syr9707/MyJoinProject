@@ -1,5 +1,6 @@
 package com.joinproject.domain.member;
 
+import com.joinproject.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

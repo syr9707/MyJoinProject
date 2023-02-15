@@ -1,5 +1,6 @@
-package com.joinproject.domain.member;
+package com.joinproject.domain.member.repository;
 
+import com.joinproject.domain.member.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
