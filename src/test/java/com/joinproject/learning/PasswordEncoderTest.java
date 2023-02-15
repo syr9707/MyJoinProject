@@ -27,4 +27,31 @@ public class PasswordEncoderTest {
         assertThat(encodePassword).isNotEqualTo(password);
     }
 
+    // 암호화시 항상 랜덤한 salt를 통한 암호화 -> 항상 다른 결과가 반환됨
+    @Test
+    void 패스워드_랜덤_암호화() throws Exception {
+        // given
+        String password = "ummchicken";
+
+        // when
+        String encodePassword = passwordEncoder.encode(password);
+        String encodePassword2 = passwordEncoder.encode(password);
+
+        // then
+        assertThat(encodePassword).isNotEqualTo(encodePassword2);
+    }
+
+    // 암호화된 비밀번호 매치
+    @Test
+    void 암오화된_비밀번호_매치() throws Exception {
+        // given
+        String password = "ummchicken";
+
+        // when
+        String encodePassword = passwordEncoder.encode(password);
+
+        // then
+        assertThat(passwordEncoder.matches(password, encodePassword)).isTrue();
+    }
+
 }
