@@ -2,7 +2,10 @@ package com.joinproject.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joinproject.domain.member.repository.MemberRepository;
+import com.joinproject.domain.member.service.LoginService;
 import com.joinproject.global.login.filter.JsonUsernamePasswordAuthenticationFilter;
+import com.joinproject.global.login.handler.LoginFailureHandler;
+import com.joinproject.global.login.handler.LoginSuccessJWTProvideHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +25,7 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-//    private final LoginService loginService;
+    private final LoginService loginService;
     private final ObjectMapper objectMapper;
     private final MemberRepository memberRepository;
 //    private final JwtService jwtService;
@@ -60,11 +63,11 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager() {//2 - AuthenticationManager 등록
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();//DaoAuthenticationProvider 사용
         provider.setPasswordEncoder(passwordEncoder());//PasswordEncoder로는 PasswordEncoderFactories.createDelegatingPasswordEncoder() 사용
-        //provider.setUserDetailsService(loginService); //이후 작성할 코드입니다.
+        provider.setUserDetailsService(loginService);
         return new ProviderManager(provider);
     }
 
-    /*@Bean
+    @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
         return new LoginSuccessJWTProvideHandler();
     }
@@ -72,7 +75,7 @@ public class SecurityConfig {
     @Bean
     public LoginFailureHandler loginFailureHandler(){
         return new LoginFailureHandler();
-    }*/
+    }
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordLoginFilter(){
