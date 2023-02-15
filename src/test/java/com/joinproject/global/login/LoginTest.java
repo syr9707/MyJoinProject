@@ -155,4 +155,48 @@ public class LoginTest {
 
     }
 
+    // 로그인 형식 JSON이 아니면 200
+    @Test
+    public void 로그인_데이터형식_JSON이_아니면_200() throws Exception {
+        //given
+        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
+
+        //when, then
+        perform(LOGIN_RUL, APPLICATION_FORM_URLENCODED, map)
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    // 로그인 Http Method가 Post가 아니면 404 NotFound
+    @Test
+    public void 로그인_HTTP_METHOD_GET이면_NOTFOUND() throws Exception {
+        //given
+        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
+
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(LOGIN_RUL)
+                        .contentType(APPLICATION_FORM_URLENCODED)
+                        .content(objectMapper.writeValueAsString(map)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void 오류_로그인_HTTP_METHOD_PUT이면_NOTFOUND() throws Exception {
+        //given
+        Map<String, String> map = getUsernamePasswordMap(USERNAME, PASSWORD);
+
+
+        //when
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put(LOGIN_RUL)
+                        .contentType(APPLICATION_FORM_URLENCODED)
+                        .content(objectMapper.writeValueAsString(map)))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
 }
