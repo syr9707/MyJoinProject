@@ -277,4 +277,19 @@ class JwtServiceTest {
         assertThat(extractUsername).isEqualTo(username);
     }
 
+    // 토큰 유효성 검사
+    @Test
+    public void 토큰_유효성_검사() throws Exception {
+        //given
+        String accessToken = jwtService.createAccessToken(username);
+        String refreshToken = jwtService.createRefreshToken();
+
+        //when, then
+        assertThat(jwtService.isTokenValid(accessToken)).isTrue();
+        assertThat(jwtService.isTokenValid(refreshToken)).isTrue();
+        assertThat(jwtService.isTokenValid(accessToken+"d")).isFalse();
+        assertThat(jwtService.isTokenValid(accessToken+"d")).isFalse();
+
+    }
+
 }
