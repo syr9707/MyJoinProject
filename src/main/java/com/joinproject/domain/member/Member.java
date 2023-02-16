@@ -1,10 +1,14 @@
 package com.joinproject.domain.member;
 
 import com.joinproject.domain.BaseTimeEntity;
+import com.joinproject.domain.comment.Comment;
+import com.joinproject.domain.post.Post;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -37,6 +41,31 @@ public class Member extends BaseTimeEntity {
 
     @Column(length = 1000)
     private String refreshToken; // RefreshToken
+
+
+    // 회원 : 게시글 = 1 : N
+    // 회원탈퇴 -> 작성한 게시물, 댓글 모두 삭제한다.
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> postList = new ArrayList<>();
+
+    // 회원 : 댓글 = 1 : N
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
+
+    /**
+     * 연관관계 편의 메서드
+     * */
+    public void addPost(Post post) {
+        // post의 writer 설정은 post에서 한다.
+        postList.add(post);
+    }
+
+    public void addComment(Comment comment) {
+        // comment의 writer 설정은 post에서 한다.
+        commentList.add(comment);
+    }
+
 
 
     // 정보 수정
