@@ -22,7 +22,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 30, unique = true)
     private String username; // 아이디
 
     private String password;
@@ -96,6 +96,22 @@ public class Member extends BaseTimeEntity {
     // 패스워드 암호화
     public void encodePassword(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(password);
+    }
+
+
+    /**
+     * 비밀번호 변경, 회원 탈퇴 시, 비밀번호를 확인하며,
+     * 이때 비밀번호의 일치여부를 판단하는 메서드
+     * */
+    public boolean matchPassword(PasswordEncoder passwordEncoder, String checkPassword) {
+        return passwordEncoder.matches(checkPassword, getPassword());
+    }
+
+    /**
+     * 회원가입시, USER의 권한을 부여하는 메서드
+     * */
+    public void addUserAuthority() {
+        this.role = Role.USER;
     }
 
 }
