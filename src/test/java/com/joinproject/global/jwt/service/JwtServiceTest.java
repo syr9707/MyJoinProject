@@ -233,7 +233,7 @@ class JwtServiceTest {
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
         //when
-        String extractAccessToken = jwtService.extractAccessToken(httpServletRequest);
+        String extractAccessToken = jwtService.extractAccessToken(httpServletRequest).orElseThrow(()-> new Exception("토큰이 없습니다"));
 
 
         //then
@@ -251,7 +251,7 @@ class JwtServiceTest {
 
 
         //when
-        String extractRefreshToken = jwtService.extractRefreshToken(httpServletRequest);
+        String extractRefreshToken = jwtService.extractRefreshToken(httpServletRequest).orElseThrow(()-> new Exception("토큰이 없습니다"));
 
 
         //then
@@ -267,10 +267,10 @@ class JwtServiceTest {
         String refreshToken = jwtService.createRefreshToken();
         HttpServletRequest httpServletRequest = setRequest(accessToken, refreshToken);
 
-        String requestAccessToken = jwtService.extractAccessToken(httpServletRequest);
+        String requestAccessToken = jwtService.extractAccessToken(httpServletRequest).orElseThrow(()->new Exception("토큰이 없습니다"));
 
         //when
-        String extractUsername = jwtService.extractUsername(requestAccessToken);
+        String extractUsername = jwtService.extractUsername(requestAccessToken).orElseThrow(()->new Exception("토큰이 없습니다"));
 
 
         //then

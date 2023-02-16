@@ -7,6 +7,7 @@ import com.joinproject.domain.member.repository.MemberRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Setter(value = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 @Transactional
@@ -111,19 +113,31 @@ public class JwtServiceImpl implements JwtService{
     }
 
     @Override
-    public String extractAccessToken(HttpServletRequest request) throws IOException, ServletException {
-        return Optional.ofNullable(request.getHeader(accessHeader)).map(accessToken -> accessToken.replace(BEARER, "")).orElse(null);
+    public Optional<String> extractAccessToken(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader(accessHeader)).filter(
+
+                accessToken -> accessToken.startsWith(BEARER)
+
+        ).map(accessToken -> accessToken.replace(BEARER, ""));
     }
 
     @Override
-    public String extractRefreshToken(HttpServletRequest request) throws IOException, ServletException {
-        return Optional.ofNullable(request.getHeader(refreshHeader)).map(refreshToken -> refreshToken.replace(BEARER, "")).orElse(null);
+    public Optional<String> extractRefreshToken(HttpServletRequest request) {
+        return Optional.ofNullable(request.getHeader(refreshHeader)).filter(
+
+                refreshToken -> refreshToken.startsWith(BEARER)
+
+        ).map(refreshToken -> refreshToken.replace(BEARER, ""));
     }
 
-    // 4
     @Override
-    public String extractUsername(String accessToken) {
-        return JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString();
+    public Optional<String> extractUsername(String accessToken) {
+        try {
+            return Optional.ofNullable(JWT.require(Algorithm.HMAC512(secret)).build().verify(accessToken).getClaim(USERNAME_CLAIM).asString());
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -135,4 +149,16 @@ public class JwtServiceImpl implements JwtService{
     public void setRefreshTokenHeader(HttpServletResponse response, String refreshToken) {
         response.setHeader(refreshHeader, refreshToken);
     }
+    @Override
+    public boolean isTokenValid(String token){
+        try {
+            JWT.require(Algorithm.HMAC512(secret)).build().verify(token);
+            return true;
+        }catch (Exception e){
+            log.error("유효하지 않은 Token입니다", e.getMessage());
+            return false;
+        }
+    }
+
 }
+
