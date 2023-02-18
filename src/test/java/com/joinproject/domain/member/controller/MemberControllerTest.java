@@ -3,6 +3,7 @@ package com.joinproject.domain.member.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.joinproject.domain.member.Member;
 import com.joinproject.domain.member.dto.MemberSignUpDto;
+import com.joinproject.domain.member.exception.MemberExceptionType;
 import com.joinproject.domain.member.repository.MemberRepository;
 import com.joinproject.domain.member.service.MemberService;
 import org.junit.jupiter.api.Test;
@@ -137,7 +138,7 @@ class MemberControllerTest {
         String accessToken = getAccessToken();
         Map<String, Object> map = new HashMap<>();
         map.put("name",name+"변경");
-        map.put("nickName",nickname+"변경");
+        map.put("nickname",nickname+"변경");
         map.put("age",age+1);
         String updateMemberData = objectMapper.writeValueAsString(map);
 
@@ -185,7 +186,6 @@ class MemberControllerTest {
         assertThat(member.getNickname()).isEqualTo(nickname);
         assertThat(member.getAge()).isEqualTo(age);
         assertThat(memberRepository.findAll().size()).isEqualTo(1);
-
     }
 
     @Test
@@ -449,7 +449,8 @@ class MemberControllerTest {
                 .andExpect(status().isOk()).andReturn();
 
         //then
-        assertThat(result.getResponse().getContentAsString()).isEqualTo("");//빈 문자열
+        Map<String, Integer> map = objectMapper.readValue(result.getResponse().getContentAsString(), Map.class);
+        assertThat(map.get("errorCode")).isEqualTo(MemberExceptionType.NOT_FOUND_MEMBER.getErrorCode()); //빈 문자열
     }
 
     @Test

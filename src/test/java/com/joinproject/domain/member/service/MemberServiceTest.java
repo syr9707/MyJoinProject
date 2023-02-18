@@ -5,6 +5,8 @@ import com.joinproject.domain.member.Role;
 import com.joinproject.domain.member.dto.MemberInfoDto;
 import com.joinproject.domain.member.dto.MemberSignUpDto;
 import com.joinproject.domain.member.dto.MemberUpdateDto;
+import com.joinproject.domain.member.exception.MemberException;
+import com.joinproject.domain.member.exception.MemberExceptionType;
 import com.joinproject.domain.member.repository.MemberRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -95,7 +97,7 @@ class MemberServiceTest {
 
         //then  TODO : 여기 MEMBEREXCEPTION으로 고치기
         Member member = memberRepository.findByUsername(memberSignUpDto.getUsername()).orElseThrow(
-                () -> new Exception("회원이 없습니다")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         assertThat(member.getId()).isNotNull();
@@ -114,8 +116,8 @@ class MemberServiceTest {
         clear();
 
         //when, then TODO : MemberException으로 고쳐야 함
-        assertThat(assertThrows(Exception.class,
-                () -> memberService.signUp(memberSignUpDto)).getMessage()).isEqualTo("이미 존재하는 아이디입니다.");
+        assertThat(assertThrows(MemberException.class,
+                () -> memberService.signUp(memberSignUpDto)).getExceptionType()).isEqualTo(MemberExceptionType.ALREADY_EXIST_USERNAME);
 
     }
 
@@ -334,8 +336,8 @@ class MemberServiceTest {
         MemberSignUpDto memberSignUpDto = setMember();
 
         //when, then TODO : MemberException으로 고쳐야 함
-        assertThat(assertThrows(Exception.class ,
-                () -> memberService.withdraw(PASSWORD+"1")).getMessage()).isEqualTo("비밀번호가 일치하지 않습니다.");
+        assertThat(assertThrows(MemberException.class ,
+                () -> memberService.withdraw(PASSWORD+"1")).getExceptionType()).isEqualTo(MemberExceptionType.WRONG_PASSWORD);
 
     }
 
