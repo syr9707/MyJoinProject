@@ -4,6 +4,8 @@ import com.joinproject.domain.member.Member;
 import com.joinproject.domain.member.dto.MemberInfoDto;
 import com.joinproject.domain.member.dto.MemberSignUpDto;
 import com.joinproject.domain.member.dto.MemberUpdateDto;
+import com.joinproject.domain.member.exception.MemberException;
+import com.joinproject.domain.member.exception.MemberExceptionType;
 import com.joinproject.domain.member.repository.MemberRepository;
 import com.joinproject.global.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,7 @@ public class MemberServiceImpl implements MemberService{
         member.encodePassword(passwordEncoder);
 
         if (memberRepository.findByUsername(memberSignUpDto.getUsername()).isPresent()) {
-            throw new Exception("이미 존재하는 아이디입니다.");
+            throw new MemberException(MemberExceptionType.ALREADY_EXIST_USERNAME);
         }
 
         memberRepository.save(member);
@@ -35,7 +37,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void update(MemberUpdateDto memberUpdateDto) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUserName()).orElseThrow(
-                () -> new Exception("회원이 존재하지 않습니다.")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         memberUpdateDto.getAge().ifPresent(member::updateAge);
@@ -46,11 +48,11 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void updatePassword(String checkPassword, String toBePassword) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUserName()).orElseThrow(
-                () -> new Exception("회원이 존재하지 않습니다.")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         if(!member.matchPassword(passwordEncoder, checkPassword) ) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         member.updatePassword(passwordEncoder, toBePassword);
@@ -63,11 +65,11 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public void withdraw(String checkPassword) throws Exception {
         Member member = memberRepository.findByUsername(SecurityUtil.getLoginUserName()).orElseThrow(
-                () -> new Exception("회원이 존재하지 않습니다.")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         if(!member.matchPassword(passwordEncoder, checkPassword) ) {
-            throw new Exception("비밀번호가 일치하지 않습니다.");
+            throw new MemberException(MemberExceptionType.WRONG_PASSWORD);
         }
 
         memberRepository.delete(member);
@@ -80,7 +82,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public MemberInfoDto getInfo(Long id) throws Exception {
         Member findMember = memberRepository.findById(id).orElseThrow(
-                () -> new Exception("회원이 없습니다.")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         return new MemberInfoDto(findMember);
@@ -95,7 +97,7 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public MemberInfoDto getMyInfo() throws Exception {
         Member findMember = memberRepository.findByUsername(SecurityUtil.getLoginUserName()).orElseThrow(
-                () -> new Exception("회원이 존재하지 않습니다.")
+                () -> new MemberException(MemberExceptionType.NOT_FOUND_MEMBER)
         );
 
         return new MemberInfoDto(findMember);
