@@ -3,14 +3,14 @@ package com.joinproject.domain.post;
 import com.joinproject.domain.BaseTimeEntity;
 import com.joinproject.domain.comment.Comment;
 import com.joinproject.domain.member.Member;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Builder
+@AllArgsConstructor
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -39,6 +39,12 @@ public class Post extends BaseTimeEntity {
     // 게시글을 삭제하면 댓글도 모두 삭제된다.
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> commentList = new ArrayList<>();
+
+    @Builder
+    public Post(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 
     /**
