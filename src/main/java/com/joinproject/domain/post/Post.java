@@ -28,7 +28,7 @@ public class Post extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String filePath;
 
     // 회원 : 게시물 = 1 : N
