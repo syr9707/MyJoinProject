@@ -1,2 +1,18 @@
-package com.joinproject.domain.post.exception;public class PostException {
+package com.joinproject.domain.post.exception;
+
+import com.joinproject.global.exception.BaseException;
+import com.joinproject.global.exception.BaseExceptionType;
+
+public class PostException extends BaseException {
+
+    private BaseExceptionType baseExceptionType;
+
+    public PostException(BaseExceptionType baseExceptionType) {
+        this.baseExceptionType = baseExceptionType;
+    }
+
+    @Override
+    public BaseExceptionType getExceptionType() {
+        return this.baseExceptionType;
+    }
 }
