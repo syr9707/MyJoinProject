@@ -29,11 +29,15 @@
 2. 게시글 CRUD
    * 회원과 연관관계를 맺는다.
    * 댓글과 연관관계를 맺는다.
+   * 권한이 없으면, 게시글을 등록하지 못한다.
 3. 게시글 댓글 CRUD
    * 회원과 연관관계를 맺는다.
    * 게시글과 연관관계를 맺는다.
+   * 대댓글이 남아있을 때, 그 댓글을 삭제하는 경우, DB와 화면에서는 지워지지 않는다.
+   * 권한이 없으면, 댓글을 등록하거나 수정할 수 없다.
 4. 게시글에 파일 업로드를 할 수 있다.
 5. 각 도메인에 관한 예외는 Custom Exception 한다.
+6. 각 권한 테스트는 MockTest로 한다.
 
 # DB 구조
 ![](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/84a15397-bc2d-4924-b4a4-635f7fe819d2/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230216%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230216T075823Z&X-Amz-Expires=86400&X-Amz-Signature=393792e520755440b274386a946690cf395e2b6ec92c0eb78528d48c13c23fdd&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
