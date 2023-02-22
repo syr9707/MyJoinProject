@@ -2,6 +2,7 @@ package com.joinproject.domain.comment.service;
 
 import com.joinproject.domain.comment.Comment;
 import com.joinproject.domain.comment.dto.CommentSaveDto;
+import com.joinproject.domain.comment.dto.CommentUpdateDto;
 import com.joinproject.domain.comment.exception.CommentException;
 import com.joinproject.domain.comment.exception.CommentExceptionType;
 import com.joinproject.domain.comment.repository.CommentRepository;
@@ -10,7 +11,10 @@ import com.joinproject.domain.member.dto.MemberSignUpDto;
 import com.joinproject.domain.member.service.MemberService;
 import com.joinproject.domain.post.Post;
 import com.joinproject.domain.post.dto.PostSaveDto;
+import com.joinproject.domain.post.exception.PostException;
+import com.joinproject.domain.post.exception.PostExceptionType;
 import com.joinproject.domain.post.repository.PostRepository;
+import com.joinproject.global.exception.BaseExceptionType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -117,6 +121,118 @@ class CommentServiceTest {
 
         List<Comment> resultList = em.createQuery("select c from Comment c order by c.createdDate desc ", Comment.class).getResultList();
         return resultList.get(0).getId();
+    }
+
+    @Test
+    public void 댓글저장_성공() throws Exception {
+        //given
+        Long postId = savePost();
+        CommentSaveDto commentSaveDto = new CommentSaveDto("댓글");
+
+        //when
+        commentService.save(postId,commentSaveDto);
+        clear();
+
+        //then
+        List<Comment> resultList = em.createQuery("select c from Comment c order by c.createdDate desc ", Comment.class).getResultList();
+        assertThat(resultList.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void 대댓글저장_성공() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        CommentSaveDto commentSaveDto = new CommentSaveDto("대댓글");
+
+        //when
+        commentService.saveReComment(postId,parentId,commentSaveDto);
+        clear();
+
+        //then
+        List<Comment> resultList = em.createQuery("select c from Comment c order by c.createdDate desc ", Comment.class).getResultList();
+        assertThat(resultList.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void 댓글저장_실패_게시물이_없음() throws Exception {
+        //given
+        Long postId = savePost();
+        CommentSaveDto commentSaveDto = new CommentSaveDto("댓글");
+
+        //when, then
+        assertThat(assertThrows(PostException.class, () -> commentService.save(postId+1,commentSaveDto)).getExceptionType()).isEqualTo(PostExceptionType.POST_NOT_POUND);
+    }
+
+    @Test
+    public void 대댓글저장_실패_게시물이_없음() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        CommentSaveDto commentSaveDto = new CommentSaveDto("댓글");
+
+        //when, then
+        assertThat(assertThrows(PostException.class, () -> commentService.saveReComment(postId+123, parentId,commentSaveDto)).getExceptionType()).isEqualTo(PostExceptionType.POST_NOT_POUND);
+    }
+
+    @Test
+    public void 대댓글저장_실패_댓글이_없음() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        CommentSaveDto commentSaveDto = new CommentSaveDto("댓글");
+
+        //when, then
+        assertThat(assertThrows(CommentException.class, () -> commentService.saveReComment(postId, parentId+1,commentSaveDto)).getExceptionType()).isEqualTo(CommentExceptionType.NOT_POUND_COMMENT);
+    }
+
+    @Test
+    public void 업데이트_성공() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        Long reCommentId = saveReComment(parentId);
+        clear();
+
+        //when
+        commentService.update(reCommentId, new CommentUpdateDto(Optional.ofNullable("업데이트")));
+        clear();
+
+        //then
+        Comment comment = commentRepository.findById(reCommentId).orElse(null);
+        assertThat(comment.getContent()).isEqualTo("업데이트");
+    }
+
+    @Test
+    public void 업데이트_실패_권한이없음() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        Long reCommentId = saveReComment(parentId);
+        clear();
+
+        anotherSignUpAndSetAuthentication();
+
+        //when, then
+        BaseExceptionType type = assertThrows(CommentException.class,
+                () -> commentService.update(reCommentId, new CommentUpdateDto(Optional.ofNullable("업데이트")))).getExceptionType();
+        assertThat(type).isEqualTo(CommentExceptionType.NOT_AUTHORITY_UPDATE_COMMENT);
+    }
+
+    @Test
+    public void 댓글삭제_실패_권한이_없음() throws Exception {
+        //given
+        Long postId = savePost();
+        Long parentId = saveComment();
+        Long reCommentId = saveReComment(parentId);
+        clear();
+
+        anotherSignUpAndSetAuthentication();
+
+        //when, then
+        BaseExceptionType type = assertThrows(CommentException.class,
+                () -> commentService.remove(reCommentId)).getExceptionType();
+        assertThat(type).isEqualTo(CommentExceptionType.NOT_AUTHORITY_DELETE_COMMENT);
     }
 
 
