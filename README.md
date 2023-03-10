@@ -107,5 +107,6 @@
 <br>
 
 # ▶️DB 구조
-![](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/84a15397-bc2d-4924-b4a4-635f7fe819d2/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230216%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230216T075823Z&X-Amz-Expires=86400&X-Amz-Signature=393792e520755440b274386a946690cf395e2b6ec92c0eb78528d48c13c23fdd&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+![](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/8cc77a17-6baa-4a50-9c6a-832c547cf02a/Untitled.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20230310%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20230310T051901Z&X-Amz-Expires=86400&X-Amz-Signature=467d2acf8efb66497f86128fbc457c534483b6f7a9b930a34ab179f9b9127b45&X-Amz-SignedHeaders=host&response-content-disposition=filename%3D%22Untitled.png%22&x-id=GetObject)
+
 
